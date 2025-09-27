@@ -2,7 +2,7 @@ package Year2025.Month09;
 
 public class Day19 {
     public static void main(String[] args) {
-        Solution ss = new Solution();
+        Solution19 ss = new Solution19();
         ss.solution(22, 6, 8);
         ss.solution(13, 6, 4);
 //
@@ -13,7 +13,7 @@ public class Day19 {
     }
 }
 
-class Solution {
+class Solution19 {
     public int solution(int n, int w, int num) {
         int answer = 0;
         int heightMax = (n % w == 0) ? n / w : n / w + 1;
