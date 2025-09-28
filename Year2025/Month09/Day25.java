@@ -40,9 +40,16 @@ class Solution25 {
             cnt = 0;
             startDay = origStartDday;
             dayCheck = 0;
+
+            int schedulesMax = (schedules[i] + 10); // 지각 허용 시간 + 10분
+            int schedulesMaxHundred = ((schedules[i] + 10) / 100) * 100; // 지각 허용 시간의 백단위 
+            int schedulesMaxTen = (schedules[i] % 100) + 10; // 지각 허용 시간의 십단위
+            schedules[i] = (schedulesMaxTen >= 60) ? // 7:55분일때 + 10분을 하면 65분이 됨 -> 8시 5분으로 표시되어야함
+                    (schedulesMaxHundred + 100) + (schedulesMaxTen - 60) : schedulesMaxHundred + schedulesMaxTen;
+
             for (int j = 0; j < 7; j++) {
                 if (startDay <= 5) {
-                    if (timelogs[i][j] - schedules[i] <= 10) {
+                    if (timelogs[i][j] - schedules[i] <= 0) {
                         cnt++;
                     }
                 }
