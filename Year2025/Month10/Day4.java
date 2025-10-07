@@ -1,7 +1,6 @@
 package Year2025.Month10;
 
-import java.util.Arrays;
-import java.util.Comparator;
+import java.util.*;
 
 public class Day4 {
     public static void main(String[] args) {
@@ -35,38 +34,34 @@ public class Day4 {
 }
 
 class Solution4 {
+    int minA = Integer.MAX_VALUE;
+    int aLimit, bLimit;
+
     public int solution(int[][] info, int n, int m) {
-        int answer = 0;
+        this.aLimit = n - 1;
+        this.bLimit = m - 1;
+        minA = Integer.MAX_VALUE;
 
-        // 두 번째 열(index = 1)을 기준으로 정렬
-        Arrays.sort(info, Comparator.comparingInt(o -> o[1]));
+        dfs(info, 0, 0, 0);
 
-        int traceAMax = n;
-        int traceBMax = m;
-        int traceA = 0;
-        int traceB = 0;
-        int traceBcnt = 0;
-        // 출력 확인
-        for (int[] row : info) {
-            System.out.println(Arrays.toString(row));
-            traceB += row[1];
-            if (traceBMax - row[1] <= 0) {
-                traceBcnt++;
-            }
-            traceBMax -= row[1];
+        if (minA == Integer.MAX_VALUE) return -1;
+        return minA;
+    }
+
+    private void dfs(int[][] info, int idx, int sumA, int sumB) {
+        // 가지치기
+        if (sumA > aLimit || sumB > bLimit) return;
+
+        if (idx == info.length) {
+            // a와 b가 모두 한도 내라면 a의 최소값 갱신
+            minA = Math.min(minA, sumA);
+            return;
         }
-        if (traceB >= traceBMax) {
-            for (int i = 0; i < traceBcnt; i++) {
-                traceA += info[i][0];
-            }
-        }
-        if (traceA > 0 && traceA < traceAMax) {
-            answer = traceA;
-        } else if (traceA == 0) {
-            answer = 0;
-        } else {
-            answer = -1;
-        }
-        return answer;
+
+        // ① 현재 항목을 b가 훔치는 경우
+        dfs(info, idx + 1, sumA, sumB + info[idx][1]);
+
+        // ② 현재 항목을 a가 훔치는 경우
+        dfs(info, idx + 1, sumA + info[idx][0], sumB);
     }
 }
