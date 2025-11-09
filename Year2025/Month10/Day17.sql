@@ -1,29 +1,35 @@
-SELECT BIN(GENOTYPE) AS binary_value FROM ECOLI_DATA;
+# SELECT BIN(GENOTYPE) AS binary_value FROM ECOLI_DATA;
 
 WITH RECURSIVE ecoliData AS (
-    SELECT ID, GENOTYPE FROM ECOLI_DATA -- where id = 8
+    SELECT ID, PARENT_ID, GENOTYPE FROM ECOLI_DATA # WHERE ID = 5
 ),
 seq AS (
-    SELECT ID, BIN(GENOTYPE) AS bin_str, LENGTH(BIN(GENOTYPE)) AS len, 1 AS pos
+    SELECT ID, PARENT_ID, GENOTYPE, BIN(GENOTYPE) AS bin_str, LENGTH(BIN(GENOTYPE)) AS len, 1 AS pos
       FROM ecoliData
      UNION ALL
-    SELECT ID, bin_str, len, pos + 1
+    SELECT ID, PARENT_ID, GENOTYPE, bin_str, len, pos + 1
       FROM seq
      WHERE pos < len
+),
+genos AS (
+    SELECT
+          A.*
+        , A.len - A.pos + 1 AS bit_position
+        , B.ID as ID_B
+        , B.PARENT_ID as PID_B
+        , B.GENOTYPE as GENOTYPE_B
+        , B.bin_str as bin_str_B
+        , B.pos as pos_B
+        , B.len - B.pos + 1 AS bit_position_B
+         # A. ID,
+         # A. GENOTYPE,
+         # B. GENOTYPE AS PARENT_GENOTYPE
+      FROM seq as A
+ LEFT JOIN seq as B
+        ON A.parent_id = B.id
+       AND A.len - A.pos + 1 = B.len - B.pos + 1
+     WHERE SUBSTRING(A.bin_str, A.pos, 1) = '1'
+       #AND B.GENOTYPE IS NOT NULL
+     ORDER BY ID
 )
-# select * from seq;
-SELECT
-    ed.ID as ed_id
-    ed.GENOTYPE as ed_gt,
-    (select genotype from ECOLI_DATA  where id = ed.parent_id) as parent_genotype,
-    bin_str,
-    len,
-    pos,
-    len - pos + 1 AS bit_position,
-    ed.parent_id
-  FROM seq
-  LEFT JOIN ECOLI_DATA ed
-    ON seq.ID = ed.ID
- WHERE SUBSTRING(bin_str, pos, 1) = '1'
-  -- AND ed.parent_id IS NOT NULL
- ORDER BY id, bin_str
+select * from genos;
