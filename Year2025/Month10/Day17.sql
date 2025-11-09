@@ -21,15 +21,12 @@ genos AS (
         , B.bin_str as bin_str_B
         , B.pos as pos_B
         , B.len - B.pos + 1 AS bit_position_B
-         # A. ID,
-         # A. GENOTYPE,
-         # B. GENOTYPE AS PARENT_GENOTYPE
       FROM seq as A
- LEFT JOIN seq as B
+      JOIN seq as B
         ON A.parent_id = B.id
        AND A.len - A.pos + 1 = B.len - B.pos + 1
      WHERE SUBSTRING(A.bin_str, A.pos, 1) = '1'
-       #AND B.GENOTYPE IS NOT NULL
-     ORDER BY ID
+       AND A.PARENT_ID IS NOT NULL
+     ORDER BY A.ID
 )
-select * from genos;
+SELECT * FROM genos;
